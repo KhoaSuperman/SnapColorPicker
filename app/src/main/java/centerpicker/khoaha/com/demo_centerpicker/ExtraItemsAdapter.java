@@ -32,6 +32,8 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     private float allPixels = 0;
 
+    private ColorPickerListener colorPickerListener;
+
     public ExtraItemsAdapter(ArrayList<MaterialColor> materialColors, RecyclerView recyclerView, float parentWidth) {
         this.materialColorArrayList = materialColors;
         this.recyclerView = recyclerView;
@@ -61,6 +63,14 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
                 }
             }
         });
+
+        //default click listener
+        colorPickerListener = new ColorPickerListener() {
+            @Override
+            public void colorSelected(int position, int color, int previousColor) {
+
+            }
+        };
     }
 
     @Override
@@ -95,7 +105,7 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         if (getItemViewType(position) == VIEW_TYPE_ITEM) {
             // We bind the item to the view
-            MaterialColor materialColor = materialColorArrayList.get(position - 1);
+            final MaterialColor materialColor = materialColorArrayList.get(position - 1);
             holder.container.setBackgroundColor(materialColor.color);
             holder.text.setText(materialColor.colorName);
 
@@ -128,6 +138,11 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
 
                     //scroll item to center
                     scrollListToPosition(recyclerView, position - 1);
+
+                    //rise click event
+                    int selectedColor = materialColorArrayList.get(position - 1).color;
+                    int previousColor = previous > 0 ? materialColorArrayList.get(previous - 1).color : 0;
+                    colorPickerListener.colorSelected(position, selectedColor, previousColor);
                 }
             });
         }
@@ -154,7 +169,11 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
         }
     }
 
+    public void setColorPickerListener(ColorPickerListener colorPickerListener) {
+        this.colorPickerListener = colorPickerListener;
+    }
+
     static interface ColorPickerListener {
-        void colorSelected(int position, int color);
+        void colorSelected(int position, int color, int previousColor);
     }
 }

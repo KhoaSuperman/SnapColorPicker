@@ -1,5 +1,6 @@
 package centerpicker.khoaha.com.demo_centerpicker;
 
+import android.content.res.ColorStateList;
 import android.graphics.Point;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
@@ -9,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
+import android.widget.ImageView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,12 +19,8 @@ public class MainActivity extends AppCompatActivity {
 
     //http://www.plattysoft.com/2015/06/16/snapping-items-on-a-horizontal-list/
 
-    private static final int NUM_ITEMS = 20;
-
-    private float itemWidth;
-    private float padding;
-    private float firstItemWidth;
-    private float allPixels;
+    ImageView ivImage;
+    ImageView ivPrevious;
 
     ArrayList<MaterialColor> materialColors = new ArrayList<>();
 
@@ -30,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ivImage = (ImageView) findViewById(R.id.ivImage);
+        ivPrevious = (ImageView) findViewById(R.id.ivPrevious);
 
         //calculate item width, padding
         Display display = getWindowManager().getDefaultDisplay();
@@ -45,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
         generateColors();
 
         ExtraItemsAdapter adapter = new ExtraItemsAdapter(materialColors, items, size.x);
-        items.setAdapter(adapter);
-
-        new Handler().postDelayed(new Runnable() {
+        adapter.setColorPickerListener(new ExtraItemsAdapter.ColorPickerListener() {
             @Override
-            public void run() {
-                items.smoothScrollToPosition(9);
+            public void colorSelected(int position, int color, int previousColor) {
+                ivImage.setColorFilter(color);
+                ivPrevious.setColorFilter(previousColor);
             }
-        }, 1000);
+        });
+        items.setAdapter(adapter);
     }
 
     private void generateColors() {
