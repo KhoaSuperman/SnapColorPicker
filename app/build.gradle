@@ -27,6 +27,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.wada811:android-material-design-colors:2.0.0'
+    compile 'com.nineoldandroids:library:2.4.0'
 }

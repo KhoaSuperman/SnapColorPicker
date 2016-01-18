@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MY_WATCH", "MainActivity.onCreate" + e.getMessage());
         }
 
-        ExtraItemsAdapter adapter = new ExtraItemsAdapter(materialColors);
+        ExtraItemsAdapter adapter = new ExtraItemsAdapter(materialColors, items);
         items.setAdapter(adapter);
     }
 
