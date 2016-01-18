@@ -173,6 +173,14 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
         this.colorPickerListener = colorPickerListener;
     }
 
+    public void setAllPixels(float allPixels) {
+        this.allPixels = allPixels;
+    }
+
+    public float getAllPixels() {
+        return allPixels;
+    }
+
     static interface ColorPickerListener {
         void colorSelected(int position, int color, int previousColor);
     }

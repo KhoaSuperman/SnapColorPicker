@@ -3,6 +3,7 @@ package centerpicker.khoaha.com.demo_centerpicker;
 import android.content.res.ColorStateList;
 import android.graphics.Point;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,10 +20,13 @@ public class MainActivity extends AppCompatActivity {
 
     //http://www.plattysoft.com/2015/06/16/snapping-items-on-a-horizontal-list/
 
+    private static final String BUNDLE_LIST_PIXELS = "allPixels";
+
     ImageView ivImage;
     ImageView ivPrevious;
 
     ArrayList<MaterialColor> materialColors = new ArrayList<>();
+    ExtraItemsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         generateColors();
 
-        ExtraItemsAdapter adapter = new ExtraItemsAdapter(materialColors, items, size.x);
+        adapter = new ExtraItemsAdapter(materialColors, items, size.x);
         adapter.setColorPickerListener(new ExtraItemsAdapter.ColorPickerListener() {
             @Override
             public void colorSelected(int position, int color, int previousColor) {
@@ -58,10 +62,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void generateColors() {
         //get colors
-        try{
+        try {
             //
             Field[] fields = Class.forName("com.wada811.android.material.design.colors" + ".R$color").getDeclaredFields();
-            for(Field field : fields) {
+            for (Field field : fields) {
                 String colorName = field.getName();
                 if (colorName.startsWith("md_")) {
                     int colorId = field.getInt(null);
@@ -69,9 +73,27 @@ public class MainActivity extends AppCompatActivity {
                     materialColors.add(new MaterialColor(color, colorName));
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.e("MY_WATCH", "MainActivity.onCreate" + e.getMessage());
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        float allPixels = savedInstanceState.getFloat(BUNDLE_LIST_PIXELS);
+        if (adapter != null) {
+            adapter.setAllPixels(allPixels);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (adapter != null) {
+            outState.putFloat(BUNDLE_LIST_PIXELS, adapter.getAllPixels());
+        }
+
     }
 
 }
