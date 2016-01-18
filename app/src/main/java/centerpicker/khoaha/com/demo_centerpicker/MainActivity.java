@@ -11,6 +11,8 @@ import android.view.Display;
 
 public class MainActivity extends AppCompatActivity {
 
+    //http://www.plattysoft.com/2015/06/16/snapping-items-on-a-horizontal-list/
+
     private static final int NUM_ITEMS = 20;
 
     private float itemWidth;
