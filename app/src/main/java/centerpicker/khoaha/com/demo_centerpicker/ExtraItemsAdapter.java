@@ -125,6 +125,9 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
                     selection = position;
 
                     notifyDataSetChanged();
+
+                    //scroll item to center
+                    scrollListToPosition(recyclerView, position - 1);
                 }
             });
         }
