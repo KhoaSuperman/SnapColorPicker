@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    repositories {
+        maven { url 'http://raw.github.com/wada811/Android-Material-Design-Colors/master/repository/' }
+    }
 }
 
 dependencies {
@@ -24,4 +28,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.wada811:android-material-design-colors:2.0.0'
 }
