@@ -35,12 +35,6 @@ public class MainActivity extends AppCompatActivity {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        firstItemWidth = getResources().getDimension(R.dimen.padding_item_width);
-        itemWidth = getResources().getDimension(R.dimen.item_width);
-        padding = (size.x - itemWidth) / 2;
-
-        //amount of scroll
-        allPixels = 0;
 
         //set list items
         final RecyclerView items = (RecyclerView) findViewById(R.id.item_list);
@@ -48,26 +42,20 @@ public class MainActivity extends AppCompatActivity {
         shopItemslayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         items.setLayoutManager(shopItemslayoutManager);
 
-        items.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        generateColors();
+
+        ExtraItemsAdapter adapter = new ExtraItemsAdapter(materialColors, items, size.x);
+        items.setAdapter(adapter);
+
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                allPixels += dx;
-                Log.d(MyCons.LOG, "onScrolled allPixels: " + allPixels);
+            public void run() {
+                items.smoothScrollToPosition(9);
             }
+        }, 1000);
+    }
 
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                synchronized (this) {
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        calculatePositionAndScroll(recyclerView);
-                    }
-                }
-            }
-        });
-
+    private void generateColors() {
         //get colors
         try{
             //
@@ -82,30 +70,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }catch(Exception e){
             Log.e("MY_WATCH", "MainActivity.onCreate" + e.getMessage());
-        }
-
-        ExtraItemsAdapter adapter = new ExtraItemsAdapter(materialColors, items);
-        items.setAdapter(adapter);
-    }
-
-    private void calculatePositionAndScroll(RecyclerView recyclerView) {
-        int expectedPosition = Math.round((allPixels + padding - firstItemWidth) / itemWidth);
-        // Special cases for the padding items
-        if (expectedPosition < 0) {
-            expectedPosition = 0;
-        } else if (expectedPosition >= recyclerView.getAdapter().getItemCount() - 2) {
-            expectedPosition--;
-        }
-        scrollListToPosition(recyclerView, expectedPosition);
-    }
-
-    private void scrollListToPosition(RecyclerView recyclerView, int expectedPosition) {
-        float targetScrollPos = expectedPosition * itemWidth + firstItemWidth - padding;
-        float missingPx = targetScrollPos - allPixels;
-
-        //always check missingPx then scroll until missingPx = 0
-        if (missingPx != 0) {
-            recyclerView.smoothScrollBy((int) missingPx, 0);
         }
     }
 

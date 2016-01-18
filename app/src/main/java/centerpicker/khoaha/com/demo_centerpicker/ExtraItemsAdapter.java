@@ -1,8 +1,10 @@
 package centerpicker.khoaha.com.demo_centerpicker;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ViewUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +24,43 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     ArrayList<MaterialColor> materialColorArrayList = new ArrayList<>();
     RecyclerView recyclerView;
+    Context context;
 
-    public ExtraItemsAdapter(ArrayList<MaterialColor> materialColors, RecyclerView recyclerView) {
+    private float firstItemWidth;
+    private float itemWidth;
+    private float padding;
+
+    private float allPixels = 0;
+
+    public ExtraItemsAdapter(ArrayList<MaterialColor> materialColors, RecyclerView recyclerView, float parentWidth) {
         this.materialColorArrayList = materialColors;
         this.recyclerView = recyclerView;
+
+        context = recyclerView.getContext();
+        this.firstItemWidth = context.getResources().getDimension(R.dimen.padding_item_width);
+        this.itemWidth = context.getResources().getDimension(R.dimen.item_width);
+        this.padding = (parentWidth - itemWidth) / 2;
+
+        //measure scroll to center
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                allPixels += dx;
+                Log.d(MyCons.LOG, "onScrolled allPixels: " + allPixels);
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                synchronized (this) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        calculatePositionAndScroll(recyclerView);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -90,9 +125,29 @@ public class ExtraItemsAdapter extends RecyclerView.Adapter<ViewHolder> {
                     selection = position;
 
                     notifyDataSetChanged();
-
                 }
             });
+        }
+    }
+
+    private void calculatePositionAndScroll(RecyclerView recyclerView) {
+        int expectedPosition = Math.round((allPixels + padding - firstItemWidth) / itemWidth);
+        // Special cases for the padding items
+        if (expectedPosition < 0) {
+            expectedPosition = 0;
+        } else if (expectedPosition >= recyclerView.getAdapter().getItemCount() - 2) {
+            expectedPosition--;
+        }
+        scrollListToPosition(recyclerView, expectedPosition);
+    }
+
+    private void scrollListToPosition(RecyclerView recyclerView, int expectedPosition) {
+        float targetScrollPos = expectedPosition * itemWidth + firstItemWidth - padding;
+        float missingPx = targetScrollPos - allPixels;
+
+        //always check missingPx then scroll until missingPx = 0
+        if (missingPx != 0) {
+            recyclerView.smoothScrollBy((int) missingPx, 0);
         }
     }
 
